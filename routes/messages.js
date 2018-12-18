@@ -64,10 +64,13 @@ messageRoutes.post('/:id', ensureLoggedIn, async function(req, res, next) {
   try {
     // Maybe we need to get message first and check that req.username is to_user
     const id = req.params.id;
+    const msg = await Message.get(id);
 
-    const markRead = await Message.markRead(id);
+    if (msg.to_user.username === req.username) {
+      const markRead = await Message.markRead(id);
 
-    return res.json({ message: markRead });
+      return res.json({ message: markRead });
+    }
   } catch (error) {
     return next(error);
   }
