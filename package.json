@@ -20,5 +20,13 @@
   },
   "devDependencies": {},
   "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jenniferenck/message.ly.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jenniferenck/message.ly/issues"
+  },
+  "homepage": "https://github.com/jenniferenck/message.ly#readme",
   "description": ""
 }

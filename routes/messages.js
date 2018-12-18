@@ -1,3 +1,10 @@
+const express = require('express');
+const messageRoutes = express();
+const bodyParser = require('body-parser');
+
+messageRoutes.use(express.json());
+messageRoutes.use(bodyParser.urlencoded({ extended: true }));
+
 /** GET /:id - get detail of message.
  *
  * => {message: {id,
@@ -11,14 +18,12 @@
  *
  **/
 
-
 /** POST / - post message.
  *
  * {to_username, body} =>
  *   {message: {id, from_username, to_username, body, sent_at}}
  *
  **/
-
 
 /** POST/:id/read - mark message as read:
  *
@@ -28,3 +33,4 @@
  *
  **/
 
+module.exports = messageRoutes;

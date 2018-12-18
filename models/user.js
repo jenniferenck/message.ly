@@ -11,6 +11,10 @@ class User {
    */
 
   static async register({ username, password, first_name, last_name, phone }) {
+    //  hash password
+    const hashedPw = await bcrypt.hash(password, 12);
+
+    // Check for unique values for username (??)
     const result = await db.query(
       `INSERT INTO users (
             username,
@@ -20,7 +24,7 @@ class User {
             phone)
           VALUES ($1, $2, $3, $4, $5)
           RETURNING username, password, first_name, last_name, phone`,
-      [username, password, first_name, last_name, phone]
+      [username, hashedPw, first_name, last_name, phone]
     );
 
     return result.rows[0];
@@ -41,10 +45,8 @@ class User {
       if (await bcrypt.compare(password, user.password)) {
         return true;
       }
-      // if user does not exist, throw an error
-    } else {
-      throw new Error(`Invalid username/ password.`);
     }
+    return false;
   }
 
   /** Update last_login_at for user */
