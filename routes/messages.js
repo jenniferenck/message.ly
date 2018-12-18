@@ -1,9 +1,9 @@
 const express = require('express');
 const messageRoutes = express();
-const bodyParser = require('body-parser');
-
-messageRoutes.use(express.json());
-messageRoutes.use(bodyParser.urlencoded({ extended: true }));
+const Message = require('Message');
+const User = require('User');
+const ensureLoggedIn = require('ensureLoggedIn');
+const ensureCorrectUser = require('ensureCorrectUser');
 
 /** GET /:id - get detail of message.
  *
@@ -18,6 +18,22 @@ messageRoutes.use(bodyParser.urlencoded({ extended: true }));
  *
  **/
 
+messageRoutes.get('/:id', ensureLoggedIn, ensureCorrectUser, async function(
+  req,
+  res,
+  next
+) {
+  try {
+    const id = req.params.id;
+
+    const msg = Message.get(id);
+
+    return res.json(msg);
+  } catch (error) {
+    return next(error);
+  }
+});
+
 /** POST / - post message.
  *
  * {to_username, body} =>
@@ -25,6 +41,21 @@ messageRoutes.use(bodyParser.urlencoded({ extended: true }));
  *
  **/
 
+messageRoutes.post('/:id', ensureLoggedIn, ensureCorrectUser, async function(
+  req,
+  res,
+  next
+) {
+  try {
+    const { from_username, to_username, body } = req.body;
+
+    const newMsg = Message.create(from_username, to_username, body);
+
+    return res.json(newMsg);
+  } catch (error) {
+    return next(error);
+  }
+});
 /** POST/:id/read - mark message as read:
  *
  *  => {message: {id, read_at}}
@@ -32,5 +63,21 @@ messageRoutes.use(bodyParser.urlencoded({ extended: true }));
  * Make sure that the only the intended recipient can mark as read.
  *
  **/
+
+messageRoutes.post('/:id', ensureLoggedIn, ensureCorrectUser, async function(
+  req,
+  res,
+  next
+) {
+  try {
+    const id = req.params.id;
+
+    const markRead = Message.markRead(id);
+
+    return res.json(markRead);
+  } catch (error) {
+    return next(error);
+  }
+});
 
 module.exports = messageRoutes;

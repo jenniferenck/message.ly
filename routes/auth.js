@@ -1,6 +1,5 @@
 const express = require('express');
 const authRoutes = express();
-const bodyParser = require('body-parser');
 const User = require('User');
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = require('SECRET_KEY');
