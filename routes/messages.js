@@ -1,9 +1,7 @@
 const express = require('express');
 const messageRoutes = express();
-const Message = require('Message');
-const User = require('User');
-const ensureLoggedIn = require('ensureLoggedIn');
-const ensureCorrectUser = require('ensureCorrectUser');
+const Message = require('../models/message');
+const { ensureLoggedIn } = require('../middleware/auth');
 
 /** GET /:id - get detail of message.
  *
@@ -18,17 +16,19 @@ const ensureCorrectUser = require('ensureCorrectUser');
  *
  **/
 
-messageRoutes.get('/:id', ensureLoggedIn, ensureCorrectUser, async function(
-  req,
-  res,
-  next
-) {
+messageRoutes.get('/:id', ensureLoggedIn, async function(req, res, next) {
   try {
     const id = req.params.id;
 
-    const msg = Message.get(id);
+    const msg = await Message.get(id);
 
-    return res.json(msg);
+    // if logged in user is either from or to user, return message
+    if (
+      req.username === msg.from_user.username ||
+      req.username === msg.to_user.username
+    ) {
+      return res.json({ message: msg });
+    }
   } catch (error) {
     return next(error);
   }
@@ -41,17 +41,13 @@ messageRoutes.get('/:id', ensureLoggedIn, ensureCorrectUser, async function(
  *
  **/
 
-messageRoutes.post('/:id', ensureLoggedIn, ensureCorrectUser, async function(
-  req,
-  res,
-  next
-) {
+messageRoutes.post('/:id', ensureLoggedIn, async function(req, res, next) {
   try {
-    const { from_username, to_username, body } = req.body;
+    const { to_username, body } = req.body;
 
-    const newMsg = Message.create(from_username, to_username, body);
+    const newMsg = await Message.create(req.username, to_username, body);
 
-    return res.json(newMsg);
+    return res.json({ message: newMsg });
   } catch (error) {
     return next(error);
   }
@@ -64,17 +60,14 @@ messageRoutes.post('/:id', ensureLoggedIn, ensureCorrectUser, async function(
  *
  **/
 
-messageRoutes.post('/:id', ensureLoggedIn, ensureCorrectUser, async function(
-  req,
-  res,
-  next
-) {
+messageRoutes.post('/:id', ensureLoggedIn, async function(req, res, next) {
   try {
+    // Maybe we need to get message first and check that req.username is to_user
     const id = req.params.id;
 
-    const markRead = Message.markRead(id);
+    const markRead = await Message.markRead(id);
 
-    return res.json(markRead);
+    return res.json({ message: markRead });
   } catch (error) {
     return next(error);
   }

@@ -1,6 +1,6 @@
 const express = require('express');
 const userRoutes = express();
-const User = require('User');
+const User = require('../models/user');
 
 /** GET / - get list of users.
  *
@@ -28,7 +28,7 @@ userRoutes.get('/:username', async function(req, res, next) {
   try {
     const user = await User.get(req.params.username);
 
-    return res.json(user);
+    return res.json({ user: user });
   } catch (error) {
     return next(error);
   }
@@ -48,7 +48,7 @@ userRoutes.get('/:username/to', async function(req, res, next) {
   try {
     const inboundMsgs = await User.messagesTo(req.params.username);
 
-    return res.json(inboundMsgs);
+    return res.json({ messages: inboundMsgs });
   } catch (error) {
     return next(error);
   }
@@ -68,7 +68,7 @@ userRoutes.get('/:username/from', async function(req, res, next) {
   try {
     const outboundMsgs = await User.messagesFrom(req.params.username);
 
-    return res.json(outboundMsgs);
+    return res.json({ messages: outboundMsgs });
   } catch (error) {
     return next(error);
   }

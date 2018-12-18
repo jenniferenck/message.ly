@@ -1,8 +1,8 @@
 const express = require('express');
 const authRoutes = express();
-const User = require('User');
+const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = require('SECRET_KEY');
+const { SECRET_KEY } = require('../config');
 
 /** POST /register - register user: registers, logs in, and returns token.
  *
@@ -15,7 +15,7 @@ authRoutes.post('/register', async function(req, res, next) {
   try {
     const { username, password, first_name, last_name, phone } = req.body;
 
-    await User.register(username, password, first_name, last_name, phone);
+    await User.register({ username, password, first_name, last_name, phone });
     await User.updateLoginTimestamp(username);
     let token = jwt.sign({ username }, SECRET_KEY);
 
