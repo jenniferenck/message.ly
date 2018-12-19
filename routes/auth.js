@@ -21,6 +21,11 @@ authRoutes.post('/register', async function(req, res, next) {
 
     return res.json({ token });
   } catch (err) {
+    err.status = 400; //bad request
+    // can apply log for the error message to set your own
+    if (err.code === '23505') {
+      err.message = 'Oops! That username is already taken. Try another, noob.';
+    }
     return next(err);
   }
 });

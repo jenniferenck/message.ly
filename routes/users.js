@@ -10,9 +10,7 @@ const User = require('../models/user');
 
 userRoutes.get('/', async function(req, res, next) {
   try {
-    const userList = await User.all();
-
-    return res.json(userList);
+    return res.json({ users: await User.all() });
   } catch (error) {
     return next(error);
   }
